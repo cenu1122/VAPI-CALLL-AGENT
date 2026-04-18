@@ -106,45 +106,74 @@
         }
     </script>
 
+    <script src="https://unpkg.com/@vapi-ai/web@latest/dist/vapi-client-sdk.umd.js"></script>
+
     <script>
-     <script src="https://unpkg.com/@vapi-ai/web"></script>
-    <script>
-      const assistantId = "354b3db7-9dda-4af4-9323-d8dc2206bf4d"; 
-      const apiKey = "2af4a659-dfb7-43a7-9d52-999b39bd2"; // Koristi svoj puni ključ
+        // TVOJI PODACI
+        const assistantId = "354b3db7-9dda-4af4-9323-d8dc2206bf4d"; // Već uneseno!
+        const apiKey = "2af4a659-dfb7-43a7-9d52-9995ebb39bd2";
 
-      const vapi = new Vapi(apiKey);
+        let vapiInstance = null;
+        
+        // Inicijalizacija Vapi klijenta
+        try {
+            vapiInstance = new Vapi(apiKey);
+        } catch (e) {
+            console.error("Vapi SDK nije učitan", e);
+        }
 
-      // Kreiramo dugme ručno da budemo sigurni da se vidi
-      const btn = document.createElement("button");
-      btn.innerHTML = "💬 Pričaj sa AI";
-      btn.style.position = "fixed";
-      btn.style.bottom = "20px";
-      btn.style.right = "20px";
-      btn.style.padding = "15px 25px";
-      btn.style.borderRadius = "50px";
-      btn.style.backgroundColor = "#22c55e";
-      btn.style.color = "white";
-      btn.style.border = "none";
-      btn.style.cursor = "pointer";
-      btn.style.fontWeight = "bold";
-      btn.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
-      btn.style.zIndex = "9999";
-      document.body.appendChild(btn);
+        // Ručno pravimo dugme da ga browser ne može blokirati
+        const aiBtn = document.createElement("button");
+        aiBtn.innerHTML = "💬 Pričaj sa Nusretovim AI";
+        aiBtn.style.position = "fixed";
+        aiBtn.style.bottom = "20px";
+        aiBtn.style.right = "20px";
+        aiBtn.style.padding = "15px 25px";
+        aiBtn.style.borderRadius = "50px";
+        aiBtn.style.backgroundColor = "#22c55e";
+        aiBtn.style.color = "white";
+        aiBtn.style.border = "none";
+        aiBtn.style.cursor = "pointer";
+        aiBtn.style.fontWeight = "bold";
+        aiBtn.style.fontSize = "16px";
+        aiBtn.style.boxShadow = "0 4px 15px rgba(0,0,0,0.4)";
+        aiBtn.style.zIndex = "10000";
+        document.body.appendChild(aiBtn);
 
-      btn.addEventListener("click", () => {
-        vapi.start(assistantId);
-      });
+        let isActive = false;
 
-      vapi.on("call-start", () => {
-        btn.innerHTML = "🔴 Slušam...";
-        btn.style.backgroundColor = "#ef4444";
-      });
+        aiBtn.onclick = () => {
+            if (!vapiInstance) {
+                alert("Greška: Vapi klijent nije spreman.");
+                return;
+            }
+            
+            if (!isActive) {
+                vapiInstance.start(assistantId);
+                aiBtn.innerHTML = "🔴 Slušam... (Klikni za kraj)";
+                aiBtn.style.backgroundColor = "#ef4444";
+                isActive = true;
+            } else {
+                vapiInstance.stop();
+                aiBtn.innerHTML = "💬 Pričaj sa Nusretovim AI";
+                aiBtn.style.backgroundColor = "#22c55e";
+                isActive = false;
+            }
+        };
 
-      vapi.on("call-end", () => {
-        btn.innerHTML = "💬 Pričaj sa AI";
-        btn.style.backgroundColor = "#22c55e";
-      });
+        // Ako asistent sam prekine poziv
+        if (vapiInstance) {
+            vapiInstance.on("call-end", () => {
+                aiBtn.innerHTML = "💬 Pričaj sa Nusretovim AI";
+                aiBtn.style.backgroundColor = "#22c55e";
+                isActive = false;
+            });
+
+            vapiInstance.on("error", (e) => {
+                console.error("Vapi Error:", e);
+                isActive = false;
+            });
+        }
     </script>
-
 </body>
 </html>
