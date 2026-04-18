@@ -8,7 +8,7 @@
         body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
         .container { max-width: 600px; margin: 0 auto; }
         h1 { color: #22c55e; }
-        textarea { width: 100%; height: 100px; margin: 10px 0; border-radius: 10px; padding: 10px; background: #1e293b; color: white; border: 1px solid #334155; box-sizing: border-box; }
+        textarea { width: 100%; height: 100px; margin: 10px 0; border-radius: 10px; padding: 10px; background: #1e293b; color: white; border: 1px solid #334155; box-sizing: border-box; font-size: 16px; }
         button { padding: 12px 20px; margin: 5px; border-radius: 10px; border: none; background: #22c55e; color: white; cursor: pointer; font-weight: bold; }
     </style>
 </head>
@@ -22,10 +22,6 @@
     </div>
 
     <script>
-      var vapiInstance = null;
-      const assistant = "354b3db7-9dda-4af4-9323-d8dc2206bf4d";
-      const apiKey = "2af4a659-dfb7-43a7-9d52-999b39bd2";
-
       (function (d, t) {
         var g = d.createElement(t),
           s = d.getElementsByTagName(t)[0];
@@ -35,14 +31,14 @@
         s.parentNode.insertBefore(g, s);
 
         g.onload = function () {
-          vapiInstance = window.vapiSDK.run({
-            apiKey: apiKey,
-            assistant: assistant,
+          window.vapiSDK.run({
+            apiKey: "2af4a659-dfb7-43a7-9d52-999b39bd2", // Tvoj Public Key
+            assistant: "354b3db7-9dda-4af4-9323-d8dc2206bf4d", // Tvoj Assistant ID
             config: {
-                position: "bottom-right",
-                title: "Nusretov AI",
-                color: "#22c55e"
-            }
+              position: "bottom-right",
+              title: "Nusretov AI",
+              color: "#22c55e",
+            },
           });
         };
       })(document, "script");
