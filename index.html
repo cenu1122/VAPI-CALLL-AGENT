@@ -98,25 +98,19 @@
         }
 
         function speak() {
-            let text = document.getElementById("output").value;
-            if(!text) return;
-            let msg = new SpeechSynthesisUtterance(text);
-            msg.lang = target === "de" ? "de-DE" : "bs-BA";
-            window.speechSynthesis.speak(msg);
-        }
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/vapi-client-sdk.umd.js"></script>
+           <script src="https://unpkg.com/@vapi-ai/web@1.0.1/dist/vapi-client-sdk.umd.js"></script>
 
     <script>
-        // TVOJI PODACI - OBAVEZNO ZAMIJENI apiKey
+        // RED 106: TVOJI PODACI
         const assistantId = "354b3db7-9dda-4af4-9323-d8dc2206bf4d";
-        const apiKey = "2af4a659-dfb7-43a7-9d52-9995ebb39bd2"; 
+        const apiKey = "ZALIJEPI_OVDJE_TVOJ_PUBLIC_KEY"; // RED 108: TVOJ KLJUČ
 
         window.onload = function() {
+            // Provjera učitavanja
             if (typeof Vapi !== 'undefined') {
                 const vapi = new Vapi(apiKey);
 
+                // Ručno pravimo dugme (da ga GitHub ne blokira)
                 const aiBtn = document.createElement("button");
                 aiBtn.innerHTML = "💬 Pričaj sa Nusretovim AI";
                 aiBtn.style.position = "fixed";
@@ -130,7 +124,7 @@
                 aiBtn.style.cursor = "pointer";
                 aiBtn.style.fontWeight = "bold";
                 aiBtn.style.zIndex = "10000";
-                aiBtn.style.boxShadow = "0 4px 12px rgba(0,0,0,0.5)";
+                aiBtn.style.boxShadow = "0 4px 15px rgba(0,0,0,0.4)";
                 document.body.appendChild(aiBtn);
 
                 let isCalling = false;
@@ -138,7 +132,7 @@
                 aiBtn.onclick = () => {
                     if (!isCalling) {
                         vapi.start(assistantId);
-                        aiBtn.innerHTML = "🔴 Slušam... (Klikni za kraj)";
+                        aiBtn.innerHTML = "🔴 Slušam... (Prekini)";
                         aiBtn.style.backgroundColor = "#ef4444";
                         isCalling = true;
                     } else {
@@ -154,6 +148,8 @@
                     aiBtn.style.backgroundColor = "#22c55e";
                     isCalling = false;
                 });
+            } else {
+                console.error("Vapi nije učitan! Pokušaj ponovo osvježiti stranicu.");
             }
         };
     </script>
