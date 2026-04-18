@@ -1,77 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="bs">
 <head>
-<meta charset="UTF-8">
-<title>Balkan Translator PRO</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Balkan Translator PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 { color: #22c55e; margin-top: 30px; }
+        
+        textarea {
+            width: 100%;
+            height: 120px;
+            margin: 15px 0;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 16px;
+            background: #1e293b;
+            color: white;
+            border: 1px solid #334155;
+            box-sizing: border-box;
+            resize: none;
+        }
 
-<style>
-body {
-    background: #0f172a;
-    color: white;
-    font-family: Arial;
-    text-align: center;
-    padding: 20px;
-}
-h1 { color: #22c55e; }
+        .button-group {
+            margin: 10px 0;
+        }
 
-textarea {
-    width: 90%;
-    height: 120px;
-    margin: 10px;
-    border-radius: 15px;
-    padding: 10px;
-    font-size: 16px;
-}
-
-button {
-    padding: 12px;
-    margin: 5px;
-    border-radius: 12px;
-    border: none;
-    background: #22c55e;
-    color: white;
-}
-</style>
+        button {
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 12px;
+            border: none;
+            background: #22c55e;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover { background: #16a34a; }
+        
+        .translate-btn {
+            width: 100%;
+            font-size: 18px;
+            background: #3b82f6;
+        }
+        .translate-btn:hover { background: #2563eb; }
+    </style>
 </head>
-
 <body>
 
-<h1>🌍 Balkan Translator PRO</h1>
+    <div class="container">
+        <h1>🌍 Balkan Translator PRO</h1>
 
-<button onclick="swap()">🔄 Zamijeni</button>
-<button onclick="speak()">🔊 Izgovori</button>
+        <div class="button-group">
+            <button onclick="swap()">🔄 Zamijeni</button>
+            <button onclick="speak()">🔊 Izgovori</button>
+        </div>
 
-<textarea id="input" placeholder="Unesi tekst..."></textarea>
+        <textarea id="input" placeholder="Unesi tekst..."></textarea>
+        
+        <button class="translate-btn" onclick="translateText()">Prevedi</button>
+        
+        <textarea id="output" placeholder="Rezultat..." readonly></textarea>
+    </div>
 
-<button onclick="translate()">Prevedi</button>
+    <script>
+        let source = "de";
+        let target = "bs";
 
-<textarea id="output" placeholder="Rezultat..." readonly></textarea>
+        function swap() {
+            [source, target] = [target, source];
+            alert("Jezici zamijenjeni! Trenutno: " + (source === "de" ? "Njemački" : "Bosanski") + " -> " + (target === "bs" ? "Bosanski" : "Njemački"));
+        }
 
-<script>
-let source="de";
-let target="bs";
+        async function translateText() {
+            let text = document.getElementById("input").value;
+            if(!text) return;
 
-function swap(){
-    [source,target]=[target,source];
-    alert("Jezici zamijenjeni!");
-}
+            try {
+                let res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${target}&dt=t&q=${encodeURIComponent(text)}`);
+                let data = await res.json();
+                document.getElementById("output").value = data[0].map(x => x[0]).join("");
+            } catch (error) {
+                alert("Greška pri prevođenju. Provjerite internet vezu.");
+            }
+        }
 
-async function translate(){
-    let text=document.getElementById("input").value;
+        function speak() {
+            let text = document.getElementById("output").value;
+            if(!text) return;
+            let msg = new SpeechSynthesisUtterance(text);
+            msg.lang = target === "de" ? "de-DE" : "bs-BA";
+            window.speechSynthesis.speak(msg);
+        }
+    </script>
 
-    let res=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${target}&dt=t&q=${encodeURIComponent(text)}`);
-    let data=await res.json();
+    <script>
+      (function (d, t) {
+        var g = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        g.src = "https://cdn.jsdelivr.net/gh/vapi-ai/html-script-tag@latest/dist/vapi-widget.js";
+        g.defer = true;
+        g.async = true;
+        s.parentNode.insertBefore(g, s);
 
-    document.getElementById("output").value=data[0].map(x=>x[0]).join("");
-}
-
-function speak(){
-    let msg=new SpeechSynthesisUtterance(document.getElementById("output").value);
-    msg.lang=target==="de"?"de-DE":"bs-BA";
-    speechSynthesis.speak(msg);
-}
-</script>
+        g.onload = function () {
+          vapiSDK.run({
+            apiKey: "OVDJE_ZALIJEPI_TVOJ_PUBLIC_KEY", 
+            assistantId: "354b3db7-9dda-4af4-9323-d8dc2206bf4d", 
+            config: {
+                position: "bottom-right",
+                title: "Pričaj sa Nusretovim AI",
+                color: "#22c55e", 
+            },
+          });
+        };
+      })(document, "script");
+    </script>
 
 </body>
 </html>
