@@ -101,16 +101,19 @@
            <script src="https://unpkg.com/@vapi-ai/web@1.0.1/dist/vapi-client-sdk.umd.js"></script>
 
     <script>
-        // RED 106: TVOJI PODACI
+       <script src="https://unpkg.com/@vapi-ai/web"></script>
+
+    <script>
+        // TVOJI PODACI
         const assistantId = "354b3db7-9dda-4af4-9323-d8dc2206bf4d";
-        const apiKey = "2af4a659-dfb7-43a7-9d52-9995ebb39bd2";
+        const apiKey = "2af4a659-dfb7-43a7-9d52-999b39bd2"; // Tvoj Public Key
 
         window.onload = function() {
-            // Provjera učitavanja
-            if (typeof Vapi !== 'undefined') {
-                const vapi = new Vapi(apiKey);
+            // Provjera da li se Vapi učitao
+            if (window.Vapi) {
+                const vapi = new window.Vapi(apiKey);
 
-                // Ručno pravimo dugme (da ga GitHub ne blokira)
+                // Ručno pravimo dugme
                 const aiBtn = document.createElement("button");
                 aiBtn.innerHTML = "💬 Pričaj sa Nusretovim AI";
                 aiBtn.style.position = "fixed";
@@ -123,35 +126,37 @@
                 aiBtn.style.border = "none";
                 aiBtn.style.cursor = "pointer";
                 aiBtn.style.fontWeight = "bold";
+                aiBtn.style.fontSize = "16px";
+                aiBtn.style.boxShadow = "0 4px 15px rgba(0,0,0,0.5)";
                 aiBtn.style.zIndex = "10000";
-                aiBtn.style.boxShadow = "0 4px 15px rgba(0,0,0,0.4)";
                 document.body.appendChild(aiBtn);
 
-                let isCalling = false;
+                let isActive = false;
 
                 aiBtn.onclick = () => {
-                    if (!isCalling) {
+                    if (!isActive) {
                         vapi.start(assistantId);
                         aiBtn.innerHTML = "🔴 Slušam... (Prekini)";
                         aiBtn.style.backgroundColor = "#ef4444";
-                        isCalling = true;
+                        isActive = true;
                     } else {
                         vapi.stop();
                         aiBtn.innerHTML = "💬 Pričaj sa Nusretovim AI";
                         aiBtn.style.backgroundColor = "#22c55e";
-                        isCalling = false;
+                        isActive = false;
                     }
                 };
 
                 vapi.on("call-end", () => {
                     aiBtn.innerHTML = "💬 Pričaj sa Nusretovim AI";
                     aiBtn.style.backgroundColor = "#22c55e";
-                    isCalling = false;
+                    isActive = false;
                 });
             } else {
-                console.error("Vapi nije učitan! Pokušaj ponovo osvježiti stranicu.");
+                console.error("Vapi biblioteka nije učitana sa unpkg.com");
             }
         };
     </script>
 </body>
 </html>
+   
