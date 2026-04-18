@@ -107,26 +107,43 @@
     </script>
 
     <script>
-      (function (d, t) {
-        var g = d.createElement(t),
-            s = d.getElementsByTagName(t)[0];
-        g.src = "https://cdn.jsdelivr.net/gh/vapi-ai/html-script-tag@latest/dist/vapi-widget.js";
-        g.defer = true;
-        g.async = true;
-        s.parentNode.insertBefore(g, s);
+     <script src="https://unpkg.com/@vapi-ai/web"></script>
+    <script>
+      const assistantId = "354b3db7-9dda-4af4-9323-d8dc2206bf4d"; 
+      const apiKey = "2af4a659-dfb7-43a7-9d52-999b39bd2"; // Koristi svoj puni ključ
 
-        g.g.onload = function () {
-          vapiSDK.run({
-            apiKey: "2af4a659-dfb7-43a7-9d52-999b39bd2", // Ovdje si zaboravio zarez na kraju!
-            assistantId: "354b3db7-9dda-4af4-9323-d8dc2206bf4d", // Ovaj ID mora biti tačan
-            config: {
-                position: "bottom-right",
-                title: "Pričaj sa Nusretovim AI",
-                color: "#22c55e", 
-            },
-          });
-        };
-      })(document, "script");
+      const vapi = new Vapi(apiKey);
+
+      // Kreiramo dugme ručno da budemo sigurni da se vidi
+      const btn = document.createElement("button");
+      btn.innerHTML = "💬 Pričaj sa AI";
+      btn.style.position = "fixed";
+      btn.style.bottom = "20px";
+      btn.style.right = "20px";
+      btn.style.padding = "15px 25px";
+      btn.style.borderRadius = "50px";
+      btn.style.backgroundColor = "#22c55e";
+      btn.style.color = "white";
+      btn.style.border = "none";
+      btn.style.cursor = "pointer";
+      btn.style.fontWeight = "bold";
+      btn.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+      btn.style.zIndex = "9999";
+      document.body.appendChild(btn);
+
+      btn.addEventListener("click", () => {
+        vapi.start(assistantId);
+      });
+
+      vapi.on("call-start", () => {
+        btn.innerHTML = "🔴 Slušam...";
+        btn.style.backgroundColor = "#ef4444";
+      });
+
+      vapi.on("call-end", () => {
+        btn.innerHTML = "💬 Pričaj sa AI";
+        btn.style.backgroundColor = "#22c55e";
+      });
     </script>
 
 </body>
