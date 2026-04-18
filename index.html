@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Balkan Translator PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    background: #0f172a;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+    padding: 20px;
+}
+h1 { color: #22c55e; }
+
+textarea {
+    width: 90%;
+    height: 120px;
+    margin: 10px;
+    border-radius: 15px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px;
+    margin: 5px;
+    border-radius: 12px;
+    border: none;
+    background: #22c55e;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌍 Balkan Translator PRO</h1>
+
+<button onclick="swap()">🔄 Zamijeni</button>
+<button onclick="speak()">🔊 Izgovori</button>
+
+<textarea id="input" placeholder="Unesi tekst..."></textarea>
+
+<button onclick="translate()">Prevedi</button>
+
+<textarea id="output" placeholder="Rezultat..." readonly></textarea>
+
+<script>
+let source="de";
+let target="bs";
+
+function swap(){
+    [source,target]=[target,source];
+    alert("Jezici zamijenjeni!");
+}
+
+async function translate(){
+    let text=document.getElementById("input").value;
+
+    let res=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${target}&dt=t&q=${encodeURIComponent(text)}`);
+    let data=await res.json();
+
+    document.getElementById("output").value=data[0].map(x=>x[0]).join("");
+}
+
+function speak(){
+    let msg=new SpeechSynthesisUtterance(document.getElementById("output").value);
+    msg.lang=target==="de"?"de-DE":"bs-BA";
+    speechSynthesis.speak(msg);
+}
+</script>
+
+</body>
+</html>
