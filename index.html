@@ -10,6 +10,7 @@
         h1 { color: #22c55e; }
         textarea { width: 100%; height: 100px; margin: 10px 0; border-radius: 10px; padding: 10px; background: #1e293b; color: white; border: 1px solid #334155; box-sizing: border-box; }
         button { padding: 12px 20px; margin: 5px; border-radius: 10px; border: none; background: #22c55e; color: white; cursor: pointer; font-weight: bold; }
+        #vapi-btn { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 50px; background: #3b82f6; border: none; color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 9999; display: none; }
     </style>
 </head>
 <body>
@@ -21,39 +22,46 @@
         <textarea id="output" placeholder="Rezultat..." readonly></textarea>
     </div>
 
+    <button id="vapi-btn">💬 Pričaj sa AI</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web@1.0.1/dist/vapi-client-sdk.umd.js"></script>
+
     <script>
-      const vapiConfig = {
-        apiKey: "2af4a659-dfb7-43a7-9d52-999b39bd2", // Tvoj Public Key
-        assistant: "354b3db7-9dda-4af4-9323-d8dc2206bf4d", // Tvoj Assistant ID
-        config: {
-          position: "bottom-right",
-          title: "Nusretov AI",
-          color: "#22c55e",
-        },
-      };
+        const assistantId = "354b3db7-9dda-4af4-9323-d8dc2206bf4d";
+        const apiKey = "2af4a659-dfb7-43a7-9d52-999b39bd2";
+        const btn = document.getElementById('vapi-btn');
 
-      (function (d, t) {
-        var g = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-        g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-        g.defer = true;
-        g.async = true;
-        s.parentNode.insertBefore(g, s);
+        // Funkcija za prevod
+        async function translateText() {
+            let text = document.getElementById("input").value;
+            if(!text) return;
+            try {
+                let res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=bs&dt=t&q=${encodeURIComponent(text)}`);
+                let data = await res.json();
+                document.getElementById("output").value = data[0][0][0];
+            } catch(e) { console.error("Greška u prevodu"); }
+        }
 
-        g.onload = function () {
-          window.vapiSDK.run(vapiConfig);
+        // POVEZIVANJE ASISTENTA
+        window.onload = () => {
+            if (typeof Vapi !== 'undefined') {
+                const vapi = new Vapi(apiKey);
+                btn.style.display = "block"; // Pokaži dugme tek kad je Vapi spreman
+
+                btn.onclick = () => {
+                    vapi.start(assistantId);
+                    btn.innerHTML = "🔴 Slušam...";
+                    btn.style.backgroundColor = "#ef4444";
+                };
+
+                vapi.on('call-end', () => {
+                    btn.innerHTML = "💬 Pričaj sa AI";
+                    btn.style.backgroundColor = "#3b82f6";
+                });
+            } else {
+                console.error("Vapi biblioteka nije učitana.");
+            }
         };
-      })(document, "script");
-
-      async function translateText() {
-          let text = document.getElementById("input").value;
-          if(!text) return;
-          try {
-              let res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=bs&dt=t&q=${encodeURIComponent(text)}`);
-              let data = await res.json();
-              document.getElementById("output").value = data[0][0][0];
-          } catch(e) { console.error("Greška u prevodu"); }
-      }
     </script>
 </body>
 </html>
